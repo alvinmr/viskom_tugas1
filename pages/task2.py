@@ -128,7 +128,7 @@ else:
         with col2:
             img = Image.open(uploaded_image)
             # img = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
-            img = img.resize((size, size))
+            # img = img.resize((size, size))
             img = np.array(img)
             st.image(img, caption='Resized Image', use_column_width=True)
 
@@ -187,21 +187,23 @@ else:
                 st.image(skeletonization, caption='Skeletonization', use_column_width=True)
 
             with st.expander("Hough Transform Line"):
-                kernel = np.ones((5,5),np.uint8)
-                houghline = cv2.HoughLines(img_grey,1,np.pi/180,200)
-                if houghline is not None: 
-                    for i in range(len(houghline)):
-                        for rho, theta in houghline[i]:
-                            a = np.cos(theta)
-                            b = np.sin(theta)
-                            x0 = a * rho
-                            y0 = b * rho
-                            x1 = int(x0 + 1000 * (-b))
-                            y1 = int(y0 + 1000 * (a))
-                            x2 = int(x0 - 1000 * (-b))
-                            y2 = int(y0 - 1000 * (a))
-                            cv2.line(img_grey, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                    st.image(img_grey, caption='Hough Transform Line', use_column_width=True)
+                edges = cv2.Canny(img_grey, 50, 150, apertureSize=3)
+                st.image(edges, caption='Edge Image', use_column_width=True)
+                
+                lines = cv2.HoughLines(edges, 1, np.pi/180, 200)
+                if lines is not None: 
+                    for line in lines:
+                        rho, theta = line[0]
+                        a = np.cos(theta)
+                        b = np.sin(theta)
+                        x0 = a * rho
+                        y0 = b * rho
+                        x1 = int(x0 + 1000 * (-b))
+                        y1 = int(y0 + 1000 * (a))
+                        x2 = int(x0 - 1000 * (-b))
+                        y2 = int(y0 - 1000 * (a))
+                        cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                    st.image(img, caption='Hough Transform Line', use_column_width=True)
                 else:
                     st.write("No lines found in the image.")
 
@@ -209,7 +211,7 @@ else:
                 kernel = np.ones((5,5),np.uint8)
                 houghcircle = cv2.HoughCircles(img_grey,cv2.HOUGH_GRADIENT,1,20,
                                             param1=50,param2=30,minRadius=0,maxRadius=0)
-                if houghline is not None:
+                if houghcircle is not None:
                     houghcircle = np.uint16(np.around(houghcircle))
                     for i in houghcircle[0,:]:
                         # draw the outer circle
@@ -274,21 +276,21 @@ else:
                 st.image(skeletonization, caption='Skeletonization', use_column_width=True)
 
             with st.expander("Hough Transform Line"):
-                kernel = np.ones((5,5),np.uint8)
-                houghline = cv2.HoughLines(img_grey,1,np.pi/180,200)
-                if houghline is not None: 
-                    for i in range(len(houghline)):
-                        for rho, theta in houghline[i]:
-                            a = np.cos(theta)
-                            b = np.sin(theta)
-                            x0 = a * rho
-                            y0 = b * rho
-                            x1 = int(x0 + 1000 * (-b))
-                            y1 = int(y0 + 1000 * (a))
-                            x2 = int(x0 - 1000 * (-b))
-                            y2 = int(y0 - 1000 * (a))
-                            cv2.line(img_grey, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                    st.image(img_grey, caption='Hough Transform Line', use_column_width=True)
+                edges = cv2.Canny(img_grey, 50, 150, apertureSize=3)
+                lines = cv2.HoughLines(edges, 1, np.pi/180, 200)
+                if lines is not None: 
+                    for line in lines:
+                        rho, theta = line[0]
+                        a = np.cos(theta)
+                        b = np.sin(theta)
+                        x0 = a * rho
+                        y0 = b * rho
+                        x1 = int(x0 + 1000 * (-b))
+                        y1 = int(y0 + 1000 * (a))
+                        x2 = int(x0 - 1000 * (-b))
+                        y2 = int(y0 - 1000 * (a))
+                        cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                    st.image(img, caption='Hough Transform Line', use_column_width=True)
                 else:
                     st.write("No lines found in the image.")
 
@@ -296,7 +298,7 @@ else:
                 kernel = np.ones((5,5),np.uint8)
                 houghcircle = cv2.HoughCircles(img_grey,cv2.HOUGH_GRADIENT,1,20,
                                             param1=50,param2=30,minRadius=0,maxRadius=0)
-                if houghline is not None:
+                if houghcircle is not None:
                     houghcircle = np.uint16(np.around(houghcircle))
                     for i in houghcircle[0,:]:
                         # draw the outer circle
